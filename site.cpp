@@ -10,7 +10,7 @@
 
 Site::Site(Lookup* msg, Lookup* mac, int id)
     : StateMachine(msg, mac), site_id_(id),
-      commit_phases_(4 * num_sites_, 0), counter_(0) {
+      commit_phases_(WRAP_MULTIPLIER * num_sites_, 0), counter_(0) {
   stringstream ss;
   ss << SITE_NAME << "(" << id << ")";
   setId(machineToInt(ss.str()));
@@ -49,6 +49,7 @@ int Site::transit(MessageTuple *inMsg, vector<MessageTuple*> &outMsgs,
         } else {
           _state = 2;
         }
+        return 3;
       }
       break;
 
@@ -57,6 +58,7 @@ int Site::transit(MessageTuple *inMsg, vector<MessageTuple*> &outMsgs,
         return 3;
       } else if (msg == DEADLINE) {
         ++counter_;
+        phaseReset(counter_);
         // phase 2 commit
         for (int k = counter_ - 3 * num_sites_;
              k <= counter_ - 2 * num_sites_ - 1; ++k) {
@@ -67,6 +69,7 @@ int Site::transit(MessageTuple *inMsg, vector<MessageTuple*> &outMsgs,
           _state = 3;
         else
           _state = 1;
+        return 3;
       }
       break;
 
@@ -76,15 +79,18 @@ int Site::transit(MessageTuple *inMsg, vector<MessageTuple*> &outMsgs,
         SiteMessage* site_msg = dynamic_cast<SiteMessage*>(inMsg);
         assert(site_msg->getSequenceNumber() == counter_);
         _state = 0;
+        return 3;
       } else if (msg == DEADLINE) {
         ++counter_;
+        phaseReset(counter_);
         for (int k = counter_ - 3 * num_sites_;
-             k <= i - 2 * num_sites_ - 1; ++k)
+             k <= counter_ - 2 * num_sites_ - 1; ++k)
           phase2(k);
         if (counter_ % num_sites_ == site_id_)
           _state = 3;
         else
           _state = 1;
+        return 3;
       }
       break;
 
@@ -116,7 +122,7 @@ StateSnapshot* Site::curState() {
 
 void Site::reset() {
   commit_phases_.clear();
-  commit_phases_.resize(4 * num_sites_, 0);
+  commit_phases_.resize(WRAP_MULTIPLIER * num_sites_, 0);
   counter_ = 0;
 }
 
@@ -137,7 +143,7 @@ void Site::phaseReceived(int seq_num) {
 }
 
 void Site::phaseCommit(int phase_num, int seq_num) {
-  commit_phases_[seq_num % (4 * num_sites_)] = phase_num;
+  commit_phases_[seq_num % (WRAP_MULTIPLIER * num_sites_)] = phase_num;
 }
 
 void Site::broadcast(MessageTuple *inMsg, vector<MessageTuple *> &outMsgs,

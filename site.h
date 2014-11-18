@@ -82,6 +82,8 @@ public:
   int toInt();
   StateSnapshot* clone() const;
   bool match(StateSnapshot* other);
+
+  int getCounter() const { return ss_counter_; }
 private:
   bool sameArray(const vector<int>& lhs, const vector<int>& rhs);
 

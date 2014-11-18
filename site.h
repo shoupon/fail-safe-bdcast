@@ -37,6 +37,7 @@ public:
   StateSnapshot* curState();
   void reset();
   static void setNumSites(int n) { num_sites_ = n; }
+  static int getNumSites() { return num_sites_; }
 
 private:
   void phase1(int seq_num);
@@ -66,9 +67,26 @@ private:
 };
 
 class SiteSnapshot: public StateSnapshot {
-  // TODO(shoupon): implement this class
+  friend class Site;
 public:
+  SiteSnapshot()
+      : ss_state_(0),
+        ss_counter_(0),
+        ss_commit_phases_(Site::getNumSites() * WRAP_MULTIPLIER, 0) {}
+  SiteSnapshot(int state, int counter, const vector<int>& phases)
+      : ss_state_(state), ss_counter_(counter), ss_commit_phases_(phases) {}
+  ~SiteSnapshot() {}
+  int curStateId() const { return ss_state_; }
+  string toString();
+  int toInt();
+  StateSnapshot* clone() const;
+  bool match(StateSnapshot* other);
 private:
+  bool sameArray(const vector<int>& lhs, const vector<int>& rhs);
+
+  const int ss_state_;
+  const int ss_counter_;
+  const vector<int> ss_commit_phases_;
 };
 
 #endif // FAILSAFEBDCAST_SITE_H

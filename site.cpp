@@ -172,3 +172,36 @@ SiteMessage::SiteMessage(int src, int dest, int srcMsg, int destMsg,
   ;
 }
 
+string SiteSnapshot::toString() {
+  stringstream ss;
+  ss << "(" << ss_state_ << "," << ss_counter_ << "," << "[";
+  for (int i = 0; i < ss_commit_phases_.size() - 1; ++i)
+    ss << ss_commit_phases_[i] << ",";
+  ss << ss_commit_phases_.back() << "]";
+  return ss.str();
+}
+
+int SiteSnapshot::toInt() {
+  return (ss_state_ << 16) + ss_counter_;
+}
+
+StateSnapshot* SiteSnapshot::clone() const {
+  return new SiteSnapshot(ss_state_, ss_counter_, ss_commit_phases_);
+}
+
+bool SiteSnapshot::match(StateSnapshot* other) {
+  assert(typeid(*other) == typeid(SiteSnapshot));
+  SiteSnapshot* other_ss = dynamic_cast<SiteSnapshot*>(other);
+  return (ss_state_ == other_ss->ss_state_) &&
+         (ss_counter_ == other_ss->ss_counter_) &&
+         sameArray(ss_commit_phases_, other_ss->ss_commit_phases_);
+}
+
+bool SiteSnapshot::sameArray(const vector<int>& lhs, const vector<int>& rhs) {
+  if (lhs.size() != rhs.size())
+    return false;
+  for (int i = 0; i < lhs.size(); ++i)
+    if (lhs[i] != rhs[i])
+      return false;
+  return true;
+}

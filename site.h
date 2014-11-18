@@ -53,8 +53,8 @@ private:
                              int seq_num);
 
   int site_id_;
-  int counter_;
   vector<int> commit_phases_;
+  int counter_;
 };
 
 class SiteMessage: public MessageTuple {

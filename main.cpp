@@ -78,6 +78,7 @@ int main( int argc, char* argv[] ) {
     for (int i = 1; i < kNumSites; ++i) {
       sites.push_back(new Site(msg_table, mac_table, i));
       pvObj.addMachine(sites.back());
+      AbortDelayCheckerState::addSiteLocation(pvObj.getNumMachines() - 1);
       if (i == 1)
         sync->setMaster(sites.back());
       else

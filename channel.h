@@ -62,3 +62,5 @@ public:
 protected:
   unique_ptr<SiteMessage> ss_msg_;
 };
+
+#endif // FAILSAFEBDCAST_CHANNEL_H

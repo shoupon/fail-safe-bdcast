@@ -8,6 +8,8 @@
 
 #include "abort-delay-checker.h"
 
+vector<int> AbortDelayCheckerState::site_locations_;
+
 bool AbortDelayChecker::check(CheckerState* checker_state,
                               const vector<StateSnapshot*>& machine_states) {
   assert(typeid(*checker_state) == typeid(AbortDelayCheckerState));

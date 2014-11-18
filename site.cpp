@@ -8,6 +8,8 @@
 
 #include "site.h"
 
+int Site::num_sites_;
+
 Site::Site(Lookup* msg, Lookup* mac, int id)
     : StateMachine(msg, mac), site_id_(id),
       commit_phases_(WRAP_MULTIPLIER * num_sites_, 0), counter_(0) {

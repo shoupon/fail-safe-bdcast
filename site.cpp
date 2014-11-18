@@ -131,7 +131,8 @@ void Site::phase1(int seq_num) {
 }
 
 void Site::phase2(int seq_num) {
-  phaseCommit(2, seq_num);
+  // Disable phase 2 commit as of now
+  // phaseCommit(2, seq_num);
 }
 
 void Site::phaseReset(int seq_num) {

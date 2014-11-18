@@ -19,6 +19,8 @@ using namespace std;
 #include "../prob_verify/sync.h"
 #include "identifiers.h"
 
+#define WRAP_MULTIPLIER 2
+
 class SiteSnapshot;
 class SiteMessage;
 

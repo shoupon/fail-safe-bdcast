@@ -106,7 +106,10 @@ int ChannelSnapshot::curStateId() const {
 }
 
 string ChannelSnapshot::toString() {
-  return ss_msg_->toString();
+  if (ss_msg_)
+    return string("[") + ss_msg_->toString() + "]";
+  else
+    return "[]";
 }
 
 int ChannelSnapshot::toInt() {

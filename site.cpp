@@ -186,7 +186,7 @@ string SiteSnapshot::toString() {
   ss << "(" << ss_state_ << "," << ss_counter_ << "," << "[";
   for (int i = 0; i < ss_commit_phases_.size() - 1; ++i)
     ss << ss_commit_phases_[i] << ",";
-  ss << ss_commit_phases_.back() << "]";
+  ss << ss_commit_phases_.back() << "])";
   return ss.str();
 }
 

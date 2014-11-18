@@ -50,8 +50,12 @@ int Channel::transit(MessageTuple *inMsg, vector<MessageTuple*> &outMsgs,
     }
   } else if (msg == DEADLINE) {
     if (startIdx == 0) {
-      high_prob = false;
-      msg_in_transit_.reset(0);
+      if (msg_in_transit_) {
+        high_prob = false;
+        msg_in_transit_.reset(0);
+      } else {
+        high_prob = true;
+      }
       return 2;
     } else {
       return -1;
@@ -72,7 +76,8 @@ int Channel::nullInputTrans(vector<MessageTuple*>& outMsgs,
   if (!msg_in_transit_)
     return -1;
   outMsgs.push_back(
-    new SiteMessage(0, dest_site_id_, 0, msg_in_transit_->destMsgId(),
+    new SiteMessage(0, machineToInt(dest_name_),
+                    0, msg_in_transit_->destMsgId(),
                     macId(), msg_in_transit_->getSequenceNumber()));
   msg_in_transit_.reset(0);
   return 3;

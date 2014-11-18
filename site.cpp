@@ -35,7 +35,7 @@ int Site::transit(MessageTuple *inMsg, vector<MessageTuple*> &outMsgs,
       if (msg == SITEMSG) {
         return 3;
       } else if (msg == DEADLINE) {
-        ++counter_;
+        incrementCounter();
         // phase reset to 0
         phaseReset(counter_);
         // phase 1 commit
@@ -59,7 +59,7 @@ int Site::transit(MessageTuple *inMsg, vector<MessageTuple*> &outMsgs,
       if (msg == SITEMSG) {
         return 3;
       } else if (msg == DEADLINE) {
-        ++counter_;
+        incrementCounter();
         phaseReset(counter_);
         // phase 2 commit
         for (int k = counter_ - 3 * num_sites_;
@@ -83,7 +83,7 @@ int Site::transit(MessageTuple *inMsg, vector<MessageTuple*> &outMsgs,
         _state = 0;
         return 3;
       } else if (msg == DEADLINE) {
-        ++counter_;
+        incrementCounter();
         phaseReset(counter_);
         for (int k = counter_ - 3 * num_sites_;
              k <= counter_ - 2 * num_sites_ - 1; ++k)

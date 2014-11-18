@@ -61,6 +61,17 @@ class SiteMessage: public MessageTuple {
 public:
   SiteMessage(int src, int dest, int srcMsg, int destMsg, int subject,
               int seq_num);
+  SiteMessage(const SiteMessage& msg)
+      : MessageTuple(msg._src, msg._dest, msg._srcMsg, msg._destMsg,
+                     msg._subject),
+        sequence_num_(msg.sequence_num_) {}
+
+  ~SiteMessage() {}
+  size_t numParams() { return 1; }
+  int getParams(size_t arg) { return sequence_num_; }
+  string toString();
+  SiteMessage* clone() const { return new SiteMessage(*this); }
+
   int getSequenceNumber() { return sequence_num_; }
 
 private:

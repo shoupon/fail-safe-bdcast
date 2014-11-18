@@ -171,11 +171,11 @@ void Site::broadcast(MessageTuple *inMsg, vector<MessageTuple *> &outMsgs,
 }
 
 SiteMessage* Site::createSiteMsg(MessageTuple *inMsg, int dest_site_id,
-                                  int seq_num) {
+                                 int seq_num) {
     stringstream ss;
     ss << CHANNEL_NAME << "(" << site_id_ << "," << dest_site_id << ")";
-    return new SiteMessage(inMsg->srcID(), machineToInt(ss.str()),
-                           inMsg->srcMsgId(), messageToInt(SITEMSG),
+    return new SiteMessage(inMsg->subjectId(), machineToInt(ss.str()),
+                           inMsg->destMsgId(), messageToInt(SITEMSG),
                            macId(), seq_num) ;
 }
 
@@ -184,6 +184,12 @@ SiteMessage::SiteMessage(int src, int dest, int srcMsg, int destMsg,
     : MessageTuple(src, dest, srcMsg, destMsg, subject),
       sequence_num_(seq_num) {
   ;
+}
+
+string SiteMessage::toString() {
+  stringstream ss;
+  ss << MessageTuple::toString() << "(" << sequence_num_ << ")";
+  return ss.str();
 }
 
 string SiteSnapshot::toString() {

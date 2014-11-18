@@ -114,18 +114,23 @@ int Site::nullInputTrans(vector<MessageTuple *> &outMsgs, bool &high_prob,
 }
 
 void Site::restore(const StateSnapshot* snapshot) {
-  // TODO(shoupon): implement this function
+  assert(typeid(*snapshot) == typeid(SiteSnapshot));
+  const SiteSnapshot* site_snapshot =
+      dynamic_cast<const SiteSnapshot*>(snapshot);
+  _state = site_snapshot->ss_state_;
+  counter_ = site_snapshot->ss_counter_;
+  commit_phases_ = site_snapshot->ss_commit_phases_;
 }
 
 StateSnapshot* Site::curState() {
-  // TODO(shoupon): implement this function
-  return new SiteSnapshot();
+  return new SiteSnapshot(_state, counter_, commit_phases_);
 }
 
 void Site::reset() {
   commit_phases_.clear();
   commit_phases_.resize(WRAP_MULTIPLIER * num_sites_, 0);
   counter_ = 0;
+  _state = 0;
 }
 
 void Site::phase1(int seq_num) {

@@ -64,7 +64,8 @@ int main( int argc, char* argv[] ) {
     Lookup* msg_table = psrPtr->getMsgTable();
     Lookup* mac_table = psrPtr->getMacTable();
     StateMachine::setLookup(msg_table, mac_table);
-    Sync* sync = new Sync(kNumParties, msg_table, mac_table);
+    Sync::setRecurring(1);
+    Sync* sync = new Sync(1, msg_table, mac_table);
     pvObj.addMachine(sync);
 
     // for each state machine:
@@ -73,9 +74,10 @@ int main( int argc, char* argv[] ) {
     // 3. register the state machine with Sync controller
     // 4. group several machines that rely on the same timing stack as a single
     //    failure group, and register the group with Sync controller
+    Site::setNumSites(3);
     vector<Site*> sites;
     vector<Channel*> channels;
-    for (int i = 1; i < kNumSites; ++i) {
+    for (int i = 1; i <= kNumSites; ++i) {
       sites.push_back(new Site(msg_table, mac_table, i));
       pvObj.addMachine(sites.back());
       AbortDelayCheckerState::addSiteLocation(pvObj.getNumMachines() - 1);
@@ -84,17 +86,17 @@ int main( int argc, char* argv[] ) {
       else
         sync->addMachine(sites.back());
       
-      vector<const StateMachine*> failure_group;
-      failure_group.push_back(sites.back());
-      for (int j = 1; j < kNumSites; ++j) {
+      //vector<const StateMachine*> failure_group;
+      //failure_group.push_back(sites.back());
+      for (int j = 1; j <= kNumSites; ++j) {
         if (i != j) {
           channels.push_back(new Channel(msg_table, mac_table, i, j));
           pvObj.addMachine(channels.back());
           sync->addMachine(channels.back());
-          failure_group.push_back(channels.back());
+          //failure_group.push_back(channels.back());
         }
       }
-      sync->addFailureGroup(failure_group);
+      //sync->addFailureGroup(failure_group);
     }
 
     // Initialize AbortDelayChecker

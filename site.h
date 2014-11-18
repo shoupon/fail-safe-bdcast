@@ -46,6 +46,7 @@ private:
   void phaseReceived(int seq_num);
   void phaseCommit(int phase_num, int seq_num);
 
+  int incrementCounter();
   void broadcast(MessageTuple* inMsg, vector<MessageTuple*>& outMsgs,
                  int seq_num);
   SiteMessage* createSiteMsg(MessageTuple* inMsg, int dest_site_id,

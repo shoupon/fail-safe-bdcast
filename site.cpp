@@ -147,6 +147,13 @@ void Site::phaseCommit(int phase_num, int seq_num) {
   commit_phases_[seq_num % (WRAP_MULTIPLIER * num_sites_)] = phase_num;
 }
 
+void Site::incrementCounter() {
+  ++counter_;
+  if (counter_ == WRAP_MULTIPLIER * num_sites_)
+    counter_ = 0;
+  return counter_;
+}
+
 void Site::broadcast(MessageTuple *inMsg, vector<MessageTuple *> &outMsgs,
                      int seq_num) {
   for (int k = 1; k <= num_sites_; ++k) {

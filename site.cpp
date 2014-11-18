@@ -46,8 +46,9 @@ int Site::transit(MessageTuple *inMsg, vector<MessageTuple*> &outMsgs,
           phase2(k);
         }
 
-        if (counter_ % num_sites_ == site_id_) {
+        if (counter_ % num_sites_ == site_id_ % num_sites_) {
           broadcast(inMsg, outMsgs, counter_);
+          phaseReceived(counter_);
         } else {
           _state = 2;
         }
@@ -80,6 +81,7 @@ int Site::transit(MessageTuple *inMsg, vector<MessageTuple*> &outMsgs,
         assert(typeid(SiteMessage) == typeid(*inMsg));
         SiteMessage* site_msg = dynamic_cast<SiteMessage*>(inMsg);
         assert(site_msg->getSequenceNumber() == counter_);
+        phaseReceived(counter_);
         _state = 0;
         return 3;
       } else if (msg == DEADLINE) {

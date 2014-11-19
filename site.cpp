@@ -153,7 +153,8 @@ void Site::phaseReceived(int seq_num) {
 }
 
 void Site::phaseCommit(int phase_num, int seq_num) {
-  commit_phases_[seq_num % (WRAP_MULTIPLIER * num_sites_)] = phase_num;
+  int m = WRAP_MULTIPLIER * num_sites_;
+  commit_phases_[(seq_num + m) % m] = phase_num;
 }
 
 int Site::incrementCounter() {

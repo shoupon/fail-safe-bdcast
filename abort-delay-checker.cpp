@@ -1,6 +1,6 @@
 //
 //  abort-delay-checker.h
-//  verification-merge
+//  fail-safe-bdcast
 //
 //  Created by Shou-pon Lin on 11/18/14.
 //  Copyright (c) 2014 Shou-pon Lin. All rights reserved.

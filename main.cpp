@@ -119,9 +119,14 @@ int main( int argc, char* argv[] ) {
     // initial state
     StoppingState stop1(startPoint);
     for (auto s_ptr : sites)
-      stop1.addAllow(new SiteSnapshot(), s_ptr->macId());
+      stop1.addAllow(new SiteSnapshot(), s_ptr->macId() - 1);
     for (auto c_ptr : channels)
-      stop1.addAllow(new ChannelSnapshot(), c_ptr->macId());
+      stop1.addAllow(new ChannelSnapshot(), c_ptr->macId() - 1);
+    // the 0-th machine in the lookup table of the machine names if "nul"
+    // the first machine is "sync", then the second machine is "site(1)" and so
+    // on, while the 0-th element in pointer array pvObj._machines is the
+    // pointer to machine Sync, therefore the -1 offset.
+    // TODO(shoupon): find a good way to fix this
 
     /*
     StoppingState stop1a(startPoint);

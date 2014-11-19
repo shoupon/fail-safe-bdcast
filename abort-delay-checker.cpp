@@ -9,6 +9,7 @@
 #include "abort-delay-checker.h"
 
 vector<int> AbortDelayCheckerState::site_locations_;
+int AbortDelayCheckerState::num_sites_;
 
 bool AbortDelayChecker::check(CheckerState* checker_state,
                               const vector<StateSnapshot*>& machine_states) {
@@ -17,6 +18,9 @@ bool AbortDelayChecker::check(CheckerState* checker_state,
       dynamic_cast<AbortDelayCheckerState*>(checker_state);
 
   if (ad_checker_state->exists_aborted_) {
+    if (++ad_checker_state->num_ticks_after_abort_ <
+        ad_checker_state->num_sites_)
+      return true;
     for (auto& p : ad_checker_state->site_locations_) {
       if (((SiteSnapshot*)(machine_states[p]))->getCounter() ==
           ad_checker_state->counter_)

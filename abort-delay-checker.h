@@ -25,18 +25,24 @@ class AbortDelayChecker;
 class AbortDelayCheckerState: public CheckerState {
   friend class AbortDelayChecker;
   static vector<int> site_locations_;
+  static int num_sites_;
 public:
-  AbortDelayCheckerState(): exists_aborted_(0), counter_(0) {}
-  AbortDelayCheckerState(int aborted, int counter)
-      : exists_aborted_(aborted), counter_(counter) {}
+  AbortDelayCheckerState()
+      : exists_aborted_(0), counter_(0), num_ticks_after_abort_(0) {}
+  AbortDelayCheckerState(int aborted, int counter, int num_ticks)
+      : exists_aborted_(aborted), counter_(counter),
+        num_ticks_after_abort_(num_ticks) {}
   AbortDelayCheckerState* clone() {
-    return new AbortDelayCheckerState(exists_aborted_, counter_);
+    return new AbortDelayCheckerState(exists_aborted_, counter_,
+                                      num_ticks_after_abort_);
   }
 
   static void addSiteLocation(int pos) { site_locations_.push_back(pos); }
+  static void setNumSites(int n) { num_sites_ = n; }
 private:
   int exists_aborted_;
   int counter_;
+  int num_ticks_after_abort_;
 };
 
 class AbortDelayChecker: public Checker {

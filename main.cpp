@@ -86,7 +86,8 @@ int main( int argc, char* argv[] ) {
     // 3. register the state machine with Sync controller
     // 4. group several machines that rely on the same timing stack as a single
     //    failure group, and register the group with Sync controller
-    Site::setNumSites(3);
+    Site::setNumSites(kNumSites);
+    AbortDelayCheckerState::setNumSites(kNumSites);
     for (int i = 1; i <= kNumSites; ++i) {
       sites.push_back(new Site(msg_table, mac_table, i));
       pvObj.addMachine(sites.back());

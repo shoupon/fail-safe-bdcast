@@ -21,6 +21,7 @@ using namespace std;
 #include "site.h"
 
 #include "abort-delay-checker.h"
+#include "abort-state.h"
 
 #include "abort-delay-checker.h"
 
@@ -88,10 +89,11 @@ int main( int argc, char* argv[] ) {
     //    failure group, and register the group with Sync controller
     Site::setNumSites(kNumSites);
     AbortDelayCheckerState::setNumSites(kNumSites);
+    vector<int> site_locations;
     for (int i = 1; i <= kNumSites; ++i) {
       sites.push_back(new Site(msg_table, mac_table, i));
       pvObj.addMachine(sites.back());
-      AbortDelayCheckerState::addSiteLocation(pvObj.getNumMachines() - 1);
+      site_locations.push_back(pvObj.getNumMachines() - 1);
       if (i == 1)
         sync->setMaster(sites.back());
       else
@@ -111,6 +113,8 @@ int main( int argc, char* argv[] ) {
     }
 
     // Initialize AbortDelayChecker
+    for (auto& p : site_locations)
+      AbortDelayCheckerState::addSiteLocation(p);
     AbortDelayChecker ad_checker;
     AbortDelayCheckerState ad_checker_state;
     // Add checker into ProbVerifier
@@ -183,6 +187,11 @@ int main( int argc, char* argv[] ) {
     for (auto c_ptr : channels)
       error_0_2.addAllow(new ChannelSnapshot(), c_ptr->macId() - 1);
     pvObj.addError(&error_0_2);
+
+    AbortState abort_state(startPoint);
+    for (auto& p : site_locations)
+      abort_state.addSiteLocation(p);
+    pvObj.addEND(&abort_state);
     /*
     StoppingState stop1a(startPoint);
     stop1a.addAllow(new StateSnapshot(1), 1) ;      // merge

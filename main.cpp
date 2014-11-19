@@ -49,6 +49,18 @@ bool printStop(GlobalState* left, GlobalState* right)
     return true;
 }
 
+vector<Site*> sites;
+vector<Channel*> channels;
+
+void setupCommitState(StoppingState& stop, int state, int counter,
+                      const vector<int>& phases) {
+  for (auto s_ptr : sites)
+    stop.addAllow(new SiteSnapshot(state, counter, phases),
+                  s_ptr->macId() - 1);
+  for (auto c_ptr : channels)
+    stop.addAllow(new ChannelSnapshot(), c_ptr->macId() - 1);
+}
+
 int kNumSites = 3;
 int kNumChannels = kNumSites * (kNumSites - 1);
 int kNumParties = kNumSites + kNumChannels;
@@ -75,8 +87,6 @@ int main( int argc, char* argv[] ) {
     // 4. group several machines that rely on the same timing stack as a single
     //    failure group, and register the group with Sync controller
     Site::setNumSites(3);
-    vector<Site*> sites;
-    vector<Channel*> channels;
     for (int i = 1; i <= kNumSites; ++i) {
       sites.push_back(new Site(msg_table, mac_table, i));
       pvObj.addMachine(sites.back());
@@ -122,12 +132,56 @@ int main( int argc, char* argv[] ) {
       stop1.addAllow(new SiteSnapshot(), s_ptr->macId() - 1);
     for (auto c_ptr : channels)
       stop1.addAllow(new ChannelSnapshot(), c_ptr->macId() - 1);
+    pvObj.addSTOP(&stop1);
     // the 0-th machine in the lookup table of the machine names if "nul"
     // the first machine is "sync", then the second machine is "site(1)" and so
     // on, while the 0-th element in pointer array pvObj._machines is the
     // pointer to machine Sync, therefore the -1 offset.
     // TODO(shoupon): find a good way to fix this
 
+    // another potential stopping state
+    // (0,5,[1,1,1,3,3,3]),[],[],
+    // (0,5,[1,1,1,3,3,3]),[],[],
+    // (0,5,[1,1,1,3,3,3]),[],[]
+
+    StoppingState stop_0_5(startPoint);
+    vector<int> commit_0_5 {1, 1, 1, 3, 3, 3};
+    setupCommitState(stop_0_5, 0, 5, commit_0_5);
+    pvObj.addSTOP(&stop_0_5);
+
+    StoppingState stop_0_4(startPoint);
+    vector<int> commit_0_4 {1, 1, 3, 3, 3, 1};
+    setupCommitState(stop_0_4, 0, 4, commit_0_4);
+    pvObj.addSTOP(&stop_0_4);
+
+    StoppingState stop_0_3(startPoint);
+    vector<int> commit_0_3 {1, 3, 3, 3, 1, 1};
+    setupCommitState(stop_0_3, 0, 3, commit_0_3);
+    pvObj.addSTOP(&stop_0_3);
+
+    StoppingState stop_0_2(startPoint);
+    vector<int> commit_0_2 {3, 3, 3, 1, 1, 1};
+    setupCommitState(stop_0_2, 0, 2, commit_0_2);
+    pvObj.addSTOP(&stop_0_2);
+
+    StoppingState stop_0_1(startPoint);
+    vector<int> commit_0_1 {3, 3, 1, 1, 1, 3};
+    setupCommitState(stop_0_1, 0, 1, commit_0_1);
+    pvObj.addSTOP(&stop_0_1);
+
+    StoppingState stop_0_0(startPoint);
+    vector<int> commit_0_0 {3, 1, 1, 1, 3, 3};
+    setupCommitState(stop_0_0, 0, 0, commit_0_0);
+    pvObj.addSTOP(&stop_0_0);
+
+    StoppingState error_0_2(startPoint);
+    vector<int> no_commit {3, 3, 3, 3, 3, 3};
+    for (auto s_ptr : sites)
+      error_0_2.addAllow(new SiteSnapshot(0, 2, no_commit),
+                         s_ptr->macId() - 1);
+    for (auto c_ptr : channels)
+      error_0_2.addAllow(new ChannelSnapshot(), c_ptr->macId() - 1);
+    pvObj.addError(&error_0_2);
     /*
     StoppingState stop1a(startPoint);
     stop1a.addAllow(new StateSnapshot(1), 1) ;      // merge

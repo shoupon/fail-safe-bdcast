@@ -68,7 +68,7 @@ int Site::transit(MessageTuple *inMsg, vector<MessageTuple*> &outMsgs,
           phase2(k);
         }
 
-        if (counter_ % num_sites_ == site_id_)
+        if (counter_ % num_sites_ == site_id_ % num_sites_)
           _state = 3;
         else
           _state = 1;
@@ -90,7 +90,7 @@ int Site::transit(MessageTuple *inMsg, vector<MessageTuple*> &outMsgs,
         for (int k = counter_ - 3 * num_sites_;
              k <= counter_ - 2 * num_sites_ - 1; ++k)
           phase2(k);
-        if (counter_ % num_sites_ == site_id_)
+        if (counter_ % num_sites_ == site_id_ % num_sites_)
           _state = 3;
         else
           _state = 1;

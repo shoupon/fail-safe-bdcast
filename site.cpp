@@ -99,7 +99,13 @@ int Site::transit(MessageTuple *inMsg, vector<MessageTuple*> &outMsgs,
       break;
 
     case 3:
-      return 3;
+      if (msg == SITEMSG) {
+        return 3;
+      } else if (msg == DEADLINE) {
+        incrementCounter();
+        phaseReset(counter_);
+        return 3;
+      }
       break;
 
     default:

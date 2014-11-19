@@ -131,5 +131,8 @@ StateSnapshot* ChannelSnapshot::clone() const {
 bool ChannelSnapshot::match(StateSnapshot* other) {
   assert(typeid(*other) == typeid(ChannelSnapshot));
   ChannelSnapshot *other_ss = dynamic_cast<ChannelSnapshot*>(other);
-  return *ss_msg_ == *(other_ss->ss_msg_);
+  if (!ss_msg_)
+    return !other_ss->ss_msg_;
+  else
+    return *ss_msg_ == *(other_ss->ss_msg_);
 }

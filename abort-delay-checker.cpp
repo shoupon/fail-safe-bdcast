@@ -1,5 +1,5 @@
 //
-//  abort-delay-checker.h
+//  abort-delay-checker.cpp
 //  fail-safe-bdcast
 //
 //  Created by Shou-pon Lin on 11/18/14.

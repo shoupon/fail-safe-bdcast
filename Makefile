@@ -16,7 +16,7 @@ LDFLAGS = -g
 # -lm for the math library
 LDLIBS = -L../prob_verify -lpverify
 
-SOURCES=main.cpp abort-delay-checker.cpp site.cpp channel.cpp abort-state.cpp
+SOURCES=main.cpp abort-delay-checker.cpp commit-received-checker.cpp site.cpp channel.cpp abort-state.cpp
 
 OBJECTS=$(SOURCES:.cpp=.o)
 

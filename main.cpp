@@ -21,9 +21,14 @@ using namespace std;
 #include "site.h"
 
 #include "abort-delay-checker.h"
+#include "commit-received-checker.h"
 #include "abort-state.h"
 
-#include "abort-delay-checker.h"
+// the flag CHECK_GUARANTEE_1 has precedence over CHECK_GUARANTEE_2, i.e., when
+// CHECK_GUARANTEE_1 is defined, then all statements under CHECK_GUARANTEE_2
+// will not be compiled
+#define CHECK_GUARANTEE_1
+#define CHECK_GUARANTEE_2
 
 ProbVerifier pvObj ;
 GlobalState* startPoint;
@@ -88,7 +93,6 @@ int main( int argc, char* argv[] ) {
     // 4. group several machines that rely on the same timing stack as a single
     //    failure group, and register the group with Sync controller
     Site::setNumSites(kNumSites);
-    AbortDelayCheckerState::setNumSites(kNumSites);
     vector<int> site_locations;
     for (int i = 1; i <= kNumSites; ++i) {
       sites.push_back(new Site(msg_table, mac_table, i));
@@ -112,13 +116,27 @@ int main( int argc, char* argv[] ) {
       //sync->addFailureGroup(failure_group);
     }
 
+#if defined(CHECK_GUARANTEE_1)
     // Initialize AbortDelayChecker
+    AbortDelayCheckerState::setNumSites(kNumSites);
     for (auto& p : site_locations)
       AbortDelayCheckerState::addSiteLocation(p);
     AbortDelayChecker ad_checker;
     AbortDelayCheckerState ad_checker_state;
     // Add checker into ProbVerifier
     pvObj.addChecker(&ad_checker);
+#elif defined(CHECK_GUARANTEE_2)
+    // Initialize CommitReceivedChecker
+    CommitReceivedChecker cr_checker;
+    for (auto& p : site_locations)
+      cr_checker.addSiteLocations(p);
+    CheckerState dummy_checker_state;
+    pvObj.addChecker(&cr_checker);
+#else
+    Checker dummy_checker;
+    CheckerState dummy_checker_state;
+    pvObj.addChecker(&dummy_checker);
+#endif
     
     // Add a default service (stub)
     Service *srvc = new Service();
@@ -126,8 +144,13 @@ int main( int argc, char* argv[] ) {
     GlobalState::setService(srvc);
 
     // Specify the starting state
+#if defined(CHECK_GUARANTEE_1)
     GlobalState* startPoint = new GlobalState(pvObj.getMachinePtrs(),
                                               &ad_checker_state);
+#else
+    GlobalState* startPoint = new GlobalState(pvObj.getMachinePtrs(),
+                                              &dummy_checker_state);
+#endif
     startPoint->setParser(psrPtr);
 
     // Specify the global states in the set RS (stopping states)

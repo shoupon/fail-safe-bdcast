@@ -45,6 +45,8 @@ private:
   void phaseReset(int seq_num);
   void phaseReceived(int seq_num);
   void phaseCommit(int phase_num, int seq_num);
+  bool received(int seq_num);
+  int getBufferIndex(int seq_num);
 
   int incrementCounter();
   void broadcast(MessageTuple* inMsg, vector<MessageTuple*>& outMsgs,
@@ -53,6 +55,11 @@ private:
                              int seq_num);
 
   int site_id_;
+  // if i-th message in the buffer, with i = sequence number mod 2N,
+  // is not received:                   commit_phases_[i] = 0
+  // is received but not yet committed: commit_phases_[i] = 3
+  // is phase-1 committed:              commit_phases_[i] = 1
+  // is phase-2 committed:              commit_phases_[i] = 2
   vector<int> commit_phases_;
   int counter_;
 };
@@ -95,6 +102,8 @@ public:
   bool match(StateSnapshot* other);
 
   int getCounter() const { return ss_counter_; }
+  int getBufferSize() const { return ss_commit_phases_.size(); }
+  int getPhase(int idx) const { return ss_commit_phases_[idx]; }
 private:
   bool sameArray(const vector<int>& lhs, const vector<int>& rhs);
 

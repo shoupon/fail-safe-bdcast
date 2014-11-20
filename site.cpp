@@ -142,7 +142,8 @@ void Site::reset() {
 }
 
 void Site::phase1(int seq_num) {
-  phaseCommit(1, seq_num);
+  if (received(seq_num))
+    phaseCommit(1, seq_num);
 }
 
 void Site::phase2(int seq_num) {
@@ -159,8 +160,17 @@ void Site::phaseReceived(int seq_num) {
 }
 
 void Site::phaseCommit(int phase_num, int seq_num) {
+  commit_phases_[getBufferIndex(seq_num)] = phase_num;
+}
+
+bool Site::received(int seq_num) {
+  return commit_phases_[getBufferIndex(seq_num)] != 0;
+}
+
+int Site::getBufferIndex(int seq_num) {
   int m = WRAP_MULTIPLIER * num_sites_;
-  commit_phases_[(seq_num + m) % m] = phase_num;
+  assert((seq_num + m) % m >= 0);
+  return (seq_num + m) % m;
 }
 
 int Site::incrementCounter() {

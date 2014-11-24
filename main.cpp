@@ -67,7 +67,7 @@ void setupCommitState(StoppingState& stop, int state, int counter,
     stop.addAllow(new ChannelSnapshot(), c_ptr->macId() - 1);
 }
 
-int kNumSites = 3;
+int kNumSites = 4;
 int kNumChannels = kNumSites * (kNumSites - 1);
 int kNumParties = kNumSites + kNumChannels;
 
@@ -171,7 +171,48 @@ int main( int argc, char* argv[] ) {
     // (0,5,[1,1,1,3,3,3]),[],[],
     // (0,5,[1,1,1,3,3,3]),[],[],
     // (0,5,[1,1,1,3,3,3]),[],[]
+    
+    StoppingState stop_0_7(startPoint);
+    vector<int> commit_0_7 {1, 1, 1, 1, 3, 3, 3, 3};
+    setupCommitState(stop_0_7, 0, 7, commit_0_7);
+    pvObj.addSTOP(&stop_0_7);
 
+    StoppingState stop_0_6(startPoint);
+    vector<int> commit_0_6 {1, 1, 1, 3, 3, 3, 3, 1};
+    setupCommitState(stop_0_6, 0, 6, commit_0_6);
+    pvObj.addSTOP(&stop_0_6);
+
+    StoppingState stop_0_5(startPoint);
+    vector<int> commit_0_5 {1, 1, 3, 3, 3, 3, 1, 1};
+    setupCommitState(stop_0_5, 0, 5, commit_0_5);
+    pvObj.addSTOP(&stop_0_5);
+
+    StoppingState stop_0_4(startPoint);
+    vector<int> commit_0_4 {1, 3, 3, 3, 3, 1, 1, 1};
+    setupCommitState(stop_0_4, 0, 4, commit_0_4);
+    pvObj.addSTOP(&stop_0_4);
+
+    StoppingState stop_0_3(startPoint);
+    vector<int> commit_0_3 {3, 3, 3, 3, 1, 1, 1, 1};
+    setupCommitState(stop_0_3, 0, 3, commit_0_3);
+    pvObj.addSTOP(&stop_0_3);
+
+    StoppingState stop_0_2(startPoint);
+    vector<int> commit_0_2 {3, 3, 3, 1, 1, 1, 1, 3};
+    setupCommitState(stop_0_2, 0, 2, commit_0_2);
+    pvObj.addSTOP(&stop_0_2);
+
+    StoppingState stop_0_1(startPoint);
+    vector<int> commit_0_1 {3, 3, 1, 1, 1, 1, 3, 3};
+    setupCommitState(stop_0_1, 0, 1, commit_0_1);
+    pvObj.addSTOP(&stop_0_1);
+
+    StoppingState stop_0_0(startPoint);
+    vector<int> commit_0_0 {3, 1, 1, 1, 1, 3, 3, 3};
+    setupCommitState(stop_0_0, 0, 0, commit_0_0);
+    pvObj.addSTOP(&stop_0_0);
+
+    /*
     StoppingState stop_0_5(startPoint);
     vector<int> commit_0_5 {1, 1, 1, 3, 3, 3};
     setupCommitState(stop_0_5, 0, 5, commit_0_5);
@@ -201,9 +242,10 @@ int main( int argc, char* argv[] ) {
     vector<int> commit_0_0 {3, 1, 1, 1, 3, 3};
     setupCommitState(stop_0_0, 0, 0, commit_0_0);
     pvObj.addSTOP(&stop_0_0);
+    */
 
     StoppingState error_0_2(startPoint);
-    vector<int> no_commit {3, 3, 3, 3, 3, 3};
+    vector<int> no_commit {3, 3, 3, 3, 3, 3, 3, 3};
     for (auto s_ptr : sites)
       error_0_2.addAllow(new SiteSnapshot(0, 2, no_commit),
                          s_ptr->macId() - 1);
@@ -229,7 +271,7 @@ int main( int argc, char* argv[] ) {
         
     // Start the procedure of probabilistic verification.
     // Specify the maximum probability depth to be explored
-    pvObj.start(3);
+    pvObj.start(10);
         
     // When complete, deallocate all machines
     delete sync ;

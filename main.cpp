@@ -30,6 +30,8 @@ using namespace std;
 #define CHECK_GUARANTEE_1
 #define CHECK_GUARANTEE_2
 
+#define NUM_SITES 4
+
 ProbVerifier pvObj ;
 GlobalState* startPoint;
 
@@ -67,7 +69,7 @@ void setupCommitState(StoppingState& stop, int state, int counter,
     stop.addAllow(new ChannelSnapshot(), c_ptr->macId() - 1);
 }
 
-int kNumSites = 4;
+int kNumSites = NUM_SITES;
 int kNumChannels = kNumSites * (kNumSites - 1);
 int kNumParties = kNumSites + kNumChannels;
 
@@ -172,6 +174,46 @@ int main( int argc, char* argv[] ) {
     // (0,5,[1,1,1,3,3,3]),[],[],
     // (0,5,[1,1,1,3,3,3]),[],[]
     
+#if (NUM_SITES == 3)
+    StoppingState stop_0_5(startPoint);
+    vector<int> commit_0_5 {1, 1, 1, 3, 3, 3};
+    setupCommitState(stop_0_5, 0, 5, commit_0_5);
+    pvObj.addSTOP(&stop_0_5);
+
+    StoppingState stop_0_4(startPoint);
+    vector<int> commit_0_4 {1, 1, 3, 3, 3, 1};
+    setupCommitState(stop_0_4, 0, 4, commit_0_4);
+    pvObj.addSTOP(&stop_0_4);
+
+    StoppingState stop_0_3(startPoint);
+    vector<int> commit_0_3 {1, 3, 3, 3, 1, 1};
+    setupCommitState(stop_0_3, 0, 3, commit_0_3);
+    pvObj.addSTOP(&stop_0_3);
+
+    StoppingState stop_0_2(startPoint);
+    vector<int> commit_0_2 {3, 3, 3, 1, 1, 1};
+    setupCommitState(stop_0_2, 0, 2, commit_0_2);
+    pvObj.addSTOP(&stop_0_2);
+
+    StoppingState stop_0_1(startPoint);
+    vector<int> commit_0_1 {3, 3, 1, 1, 1, 3};
+    setupCommitState(stop_0_1, 0, 1, commit_0_1);
+    pvObj.addSTOP(&stop_0_1);
+
+    StoppingState stop_0_0(startPoint);
+    vector<int> commit_0_0 {3, 1, 1, 1, 3, 3};
+    setupCommitState(stop_0_0, 0, 0, commit_0_0);
+    pvObj.addSTOP(&stop_0_0);
+
+    StoppingState error_0_2(startPoint);
+    vector<int> no_commit {3, 3, 3, 3, 3, 3};
+    for (auto s_ptr : sites)
+      error_0_2.addAllow(new SiteSnapshot(0, 2, no_commit),
+                         s_ptr->macId() - 1);
+    for (auto c_ptr : channels)
+      error_0_2.addAllow(new ChannelSnapshot(), c_ptr->macId() - 1);
+    pvObj.addError(&error_0_2);
+#elif (NUM_SITES == 4)
     StoppingState stop_0_7(startPoint);
     vector<int> commit_0_7 {1, 1, 1, 1, 3, 3, 3, 3};
     setupCommitState(stop_0_7, 0, 7, commit_0_7);
@@ -212,38 +254,6 @@ int main( int argc, char* argv[] ) {
     setupCommitState(stop_0_0, 0, 0, commit_0_0);
     pvObj.addSTOP(&stop_0_0);
 
-    /*
-    StoppingState stop_0_5(startPoint);
-    vector<int> commit_0_5 {1, 1, 1, 3, 3, 3};
-    setupCommitState(stop_0_5, 0, 5, commit_0_5);
-    pvObj.addSTOP(&stop_0_5);
-
-    StoppingState stop_0_4(startPoint);
-    vector<int> commit_0_4 {1, 1, 3, 3, 3, 1};
-    setupCommitState(stop_0_4, 0, 4, commit_0_4);
-    pvObj.addSTOP(&stop_0_4);
-
-    StoppingState stop_0_3(startPoint);
-    vector<int> commit_0_3 {1, 3, 3, 3, 1, 1};
-    setupCommitState(stop_0_3, 0, 3, commit_0_3);
-    pvObj.addSTOP(&stop_0_3);
-
-    StoppingState stop_0_2(startPoint);
-    vector<int> commit_0_2 {3, 3, 3, 1, 1, 1};
-    setupCommitState(stop_0_2, 0, 2, commit_0_2);
-    pvObj.addSTOP(&stop_0_2);
-
-    StoppingState stop_0_1(startPoint);
-    vector<int> commit_0_1 {3, 3, 1, 1, 1, 3};
-    setupCommitState(stop_0_1, 0, 1, commit_0_1);
-    pvObj.addSTOP(&stop_0_1);
-
-    StoppingState stop_0_0(startPoint);
-    vector<int> commit_0_0 {3, 1, 1, 1, 3, 3};
-    setupCommitState(stop_0_0, 0, 0, commit_0_0);
-    pvObj.addSTOP(&stop_0_0);
-    */
-
     StoppingState error_0_2(startPoint);
     vector<int> no_commit {3, 3, 3, 3, 3, 3, 3, 3};
     for (auto s_ptr : sites)
@@ -252,20 +262,12 @@ int main( int argc, char* argv[] ) {
     for (auto c_ptr : channels)
       error_0_2.addAllow(new ChannelSnapshot(), c_ptr->macId() - 1);
     pvObj.addError(&error_0_2);
+#endif
 
     AbortState abort_state(startPoint);
     for (auto& p : site_locations)
       abort_state.addSiteLocation(p);
     pvObj.addEND(&abort_state);
-    /*
-    StoppingState stop1a(startPoint);
-    stop1a.addAllow(new StateSnapshot(1), 1) ;      // merge
-    stop1a.addAllow(new LockSnapshot(1,0,REQUEST), 4) ;    // lock 0
-    stop1a.addAllow(new StateSnapshot(0), 7) ;      // trbp
-    stop1a.addAllow(new StateSnapshot(0), 8) ;      // icc merge
-    stop1a.addAllow(new StateSnapshot(1), 11) ;     // driver
-    pvObj.addSTOP(&stop1a);
-    */
 
     pvObj.addPrintStop(printStop) ;
         

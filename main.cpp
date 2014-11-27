@@ -30,7 +30,7 @@ using namespace std;
 #define CHECK_GUARANTEE_1
 #define CHECK_GUARANTEE_2
 
-#define NUM_SITES 4
+#define NUM_SITES 5
 
 ProbVerifier pvObj ;
 GlobalState* startPoint;
@@ -256,6 +256,65 @@ int main( int argc, char* argv[] ) {
 
     StoppingState error_0_2(startPoint);
     vector<int> no_commit {3, 3, 3, 3, 3, 3, 3, 3};
+    for (auto s_ptr : sites)
+      error_0_2.addAllow(new SiteSnapshot(0, 2, no_commit),
+                         s_ptr->macId() - 1);
+    for (auto c_ptr : channels)
+      error_0_2.addAllow(new ChannelSnapshot(), c_ptr->macId() - 1);
+    pvObj.addError(&error_0_2);
+#elif (NUM_SITES == 5)
+    StoppingState stop_0_9(startPoint);
+    vector<int> commit_0_9 {1, 1, 1, 1, 1, 3, 3, 3, 3, 3};
+    setupCommitState(stop_0_9, 0, 9, commit_0_9);
+    pvObj.addSTOP(&stop_0_9);
+
+    StoppingState stop_0_8(startPoint);
+    vector<int> commit_0_8 {1, 1, 1, 1, 3, 3, 3, 3, 3, 1};
+    setupCommitState(stop_0_8, 0, 8, commit_0_8);
+    pvObj.addSTOP(&stop_0_8);
+
+    StoppingState stop_0_7(startPoint);
+    vector<int> commit_0_7 {1, 1, 1, 3, 3, 3, 3, 3, 1, 1};
+    setupCommitState(stop_0_7, 0, 7, commit_0_7);
+    pvObj.addSTOP(&stop_0_7);
+
+    StoppingState stop_0_6(startPoint);
+    vector<int> commit_0_6 {1, 1, 3, 3, 3, 3, 3, 1, 1, 1};
+    setupCommitState(stop_0_6, 0, 6, commit_0_6);
+    pvObj.addSTOP(&stop_0_6);
+
+    StoppingState stop_0_5(startPoint);
+    vector<int> commit_0_5 {1, 3, 3, 3, 3, 3, 1, 1, 1, 1};
+    setupCommitState(stop_0_5, 0, 5, commit_0_5);
+    pvObj.addSTOP(&stop_0_5);
+
+    StoppingState stop_0_4(startPoint);
+    vector<int> commit_0_4 {3, 3, 3, 3, 3, 1, 1, 1, 1, 1};
+    setupCommitState(stop_0_4, 0, 4, commit_0_4);
+    pvObj.addSTOP(&stop_0_4);
+
+    StoppingState stop_0_3(startPoint);
+    vector<int> commit_0_3 {3, 3, 3, 3, 1, 1, 1, 1, 1, 3};
+    setupCommitState(stop_0_3, 0, 3, commit_0_3);
+    pvObj.addSTOP(&stop_0_3);
+
+    StoppingState stop_0_2(startPoint);
+    vector<int> commit_0_2 {3, 3, 3, 1, 1, 1, 1, 1, 3, 3};
+    setupCommitState(stop_0_2, 0, 2, commit_0_2);
+    pvObj.addSTOP(&stop_0_2);
+
+    StoppingState stop_0_1(startPoint);
+    vector<int> commit_0_1 {3, 3, 1, 1, 1, 1, 1, 3, 3, 3};
+    setupCommitState(stop_0_1, 0, 1, commit_0_1);
+    pvObj.addSTOP(&stop_0_1);
+
+    StoppingState stop_0_0(startPoint);
+    vector<int> commit_0_0 {3, 1, 1, 1, 1, 1, 3, 3, 3, 3};
+    setupCommitState(stop_0_0, 0, 0, commit_0_0);
+    pvObj.addSTOP(&stop_0_0);
+
+    StoppingState error_0_2(startPoint);
+    vector<int> no_commit {3, 3, 3, 3, 3, 3, 3, 3, 3, 3};
     for (auto s_ptr : sites)
       error_0_2.addAllow(new SiteSnapshot(0, 2, no_commit),
                          s_ptr->macId() - 1);

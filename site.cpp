@@ -118,7 +118,18 @@ int Site::transit(MessageTuple *inMsg, vector<MessageTuple*> &outMsgs,
 
 int Site::nullInputTrans(vector<MessageTuple *> &outMsgs, bool &high_prob,
                          int startIdx) {
-  return -1;
+  outMsgs.clear();
+  high_prob = true;
+  if (!startIdx) {
+    if (_state == 0 || _state == 2) {
+      _state = 1;
+      high_prob = false;
+      return 1;
+    }
+    return -1;
+  } else {
+    return -1;
+  }
 }
 
 void Site::restore(const StateSnapshot* snapshot) {

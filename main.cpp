@@ -27,7 +27,7 @@ using namespace std;
 // the flag CHECK_GUARANTEE_1 has precedence over CHECK_GUARANTEE_2, i.e., when
 // CHECK_GUARANTEE_1 is defined, then all statements under CHECK_GUARANTEE_2
 // will not be compiled
-#define CHECK_GUARANTEE_1
+//#define CHECK_GUARANTEE_1
 #define CHECK_GUARANTEE_2
 
 #define NUM_SITES 5
@@ -75,17 +75,15 @@ int kNumParties = kNumSites + kNumChannels;
 
 int main( int argc, char* argv[] ) {
   try {
-    // Declare the names of component machines so as to register these names as
-    // id's in the parser
-    Parser* psrPtr = new Parser() ;
     // Create StateMachine objects
     // Add the state machines into ProbVerifier
     // Register the machines that are triggered by deadline (sync)
-    Lookup* msg_table = psrPtr->getMsgTable();
-    Lookup* mac_table = psrPtr->getMacTable();
-    StateMachine::setLookup(msg_table, mac_table);
+    unique_ptr<Lookup> message_lookup(new Lookup());
+    unique_ptr<Lookup> machine_lookup(new Lookup());
+    StateMachine::setLookup(message_lookup.get(), machine_lookup.get());
+    StateMachine::setLookup(message_lookup.get(), machine_lookup.get());
     Sync::setRecurring(1);
-    Sync* sync = new Sync(1, msg_table, mac_table);
+    Sync* sync = new Sync(1, message_lookup.get(), machine_lookup.get());
     pvObj.addMachine(sync);
 
     // for each state machine:
@@ -97,7 +95,7 @@ int main( int argc, char* argv[] ) {
     Site::setNumSites(kNumSites);
     vector<int> site_locations;
     for (int i = 1; i <= kNumSites; ++i) {
-      sites.push_back(new Site(msg_table, mac_table, i));
+      sites.push_back(new Site(message_lookup.get(), machine_lookup.get(), i));
       pvObj.addMachine(sites.back());
       site_locations.push_back(pvObj.getNumMachines() - 1);
       if (i == 1)
@@ -109,7 +107,7 @@ int main( int argc, char* argv[] ) {
       //failure_group.push_back(sites.back());
       for (int j = 1; j <= kNumSites; ++j) {
         if (i != j) {
-          channels.push_back(new Channel(msg_table, mac_table, i, j));
+          channels.push_back(new Channel(message_lookup.get(), machine_lookup.get(), i, j));
           pvObj.addMachine(channels.back());
           sync->addMachine(channels.back());
           //failure_group.push_back(channels.back());
@@ -153,7 +151,6 @@ int main( int argc, char* argv[] ) {
     GlobalState* startPoint = new GlobalState(pvObj.getMachinePtrs(),
                                               &dummy_checker_state);
 #endif
-    startPoint->setParser(psrPtr);
 
     // Specify the global states in the set RS (stopping states)
     // initial state
@@ -341,7 +338,6 @@ int main( int argc, char* argv[] ) {
     for (auto c_ptr : channels)
       delete c_ptr;
     delete startPoint;
-    delete psrPtr;
         
   } catch (runtime_error& re) {
     cerr << "Runtime error:" << endl

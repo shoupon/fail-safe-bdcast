@@ -27,10 +27,10 @@ using namespace std;
 // the flag CHECK_GUARANTEE_1 has precedence over CHECK_GUARANTEE_2, i.e., when
 // CHECK_GUARANTEE_1 is defined, then all statements under CHECK_GUARANTEE_2
 // will not be compiled
-//#define CHECK_GUARANTEE_1
+#define CHECK_GUARANTEE_1
 #define CHECK_GUARANTEE_2
 
-#define NUM_SITES 5
+#define NUM_SITES 3
 
 ProbVerifier pvObj ;
 GlobalState* startPoint;
@@ -67,6 +67,16 @@ void setupCommitState(StoppingState& stop, int state, int counter,
                   s_ptr->macId() - 1);
   for (auto c_ptr : channels)
     stop.addAllow(new ChannelSnapshot(), c_ptr->macId() - 1);
+}
+
+void mutateInitState(GlobalState* init, int state, int counter,
+                     const vector<int>& phases) {
+  SiteSnapshot* snapshot;
+  for (auto s_ptr : sites) {
+    snapshot = new SiteSnapshot(state, counter, phases);
+    init->mutateState(snapshot, s_ptr->macId() - 1);
+    delete snapshot;
+  }
 }
 
 int kNumSites = NUM_SITES;
@@ -154,12 +164,14 @@ int main( int argc, char* argv[] ) {
 
     // Specify the global states in the set RS (stopping states)
     // initial state
+    /*
     StoppingState stop1(startPoint);
     for (auto s_ptr : sites)
       stop1.addAllow(new SiteSnapshot(), s_ptr->macId() - 1);
     for (auto c_ptr : channels)
       stop1.addAllow(new ChannelSnapshot(), c_ptr->macId() - 1);
     pvObj.addSTOP(&stop1);
+    */
     // the 0-th machine in the lookup table of the machine names if "nul"
     // the first machine is "sync", then the second machine is "site(1)" and so
     // on, while the 0-th element in pointer array pvObj._machines is the
@@ -172,8 +184,10 @@ int main( int argc, char* argv[] ) {
     // (0,5,[1,1,1,3,3,3]),[],[]
     
 #if (NUM_SITES == 3)
-    StoppingState stop_0_5(startPoint);
     vector<int> commit_0_5 {1, 1, 1, 3, 3, 3};
+    mutateInitState(startPoint, 0, 5, commit_0_5);
+
+    StoppingState stop_0_5(startPoint);
     setupCommitState(stop_0_5, 0, 5, commit_0_5);
     pvObj.addSTOP(&stop_0_5);
 
@@ -211,8 +225,10 @@ int main( int argc, char* argv[] ) {
       error_0_2.addAllow(new ChannelSnapshot(), c_ptr->macId() - 1);
     pvObj.addError(&error_0_2);
 #elif (NUM_SITES == 4)
-    StoppingState stop_0_7(startPoint);
     vector<int> commit_0_7 {1, 1, 1, 1, 3, 3, 3, 3};
+    mutateInitState(startPoint, 0, 7, commit_0_7);
+
+    StoppingState stop_0_7(startPoint);
     setupCommitState(stop_0_7, 0, 7, commit_0_7);
     pvObj.addSTOP(&stop_0_7);
 
@@ -260,8 +276,10 @@ int main( int argc, char* argv[] ) {
       error_0_2.addAllow(new ChannelSnapshot(), c_ptr->macId() - 1);
     pvObj.addError(&error_0_2);
 #elif (NUM_SITES == 5)
-    StoppingState stop_0_9(startPoint);
     vector<int> commit_0_9 {1, 1, 1, 1, 1, 3, 3, 3, 3, 3};
+    mutateInitState(startPoint, 0, 9, commit_0_9);
+  
+    StoppingState stop_0_9(startPoint);
     setupCommitState(stop_0_9, 0, 9, commit_0_9);
     pvObj.addSTOP(&stop_0_9);
 
@@ -329,8 +347,9 @@ int main( int argc, char* argv[] ) {
         
     // Start the procedure of probabilistic verification.
     // Specify the maximum probability depth to be explored
-    pvObj.start(10);
-        
+    //pvObj.start(2);
+    pvObj.start(10, startPoint);
+
     // When complete, deallocate all machines
     delete sync ;
     for (auto s_ptr : sites)

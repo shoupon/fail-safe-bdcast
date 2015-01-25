@@ -51,8 +51,7 @@ private:
   int incrementCounter();
   void broadcast(MessageTuple* inMsg, vector<MessageTuple*>& outMsgs,
                  int seq_num);
-  SiteMessage* createSiteMsg(MessageTuple* inMsg, int dest_site_id,
-                             int seq_num);
+  SiteMessage* createSiteMsg(MessageTuple* inMsg, int seq_num);
 
   int site_id_;
   // if i-th message in the buffer, with i = sequence number mod 2N,

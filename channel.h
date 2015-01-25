@@ -26,7 +26,7 @@ class ChannelSnapshot;
 
 class Channel: public StateMachine {
 public:
-  Channel(Lookup* msg, Lookup* mac, int from, int to);
+  Channel(Lookup* msg, Lookup* mac, int from, const vector<int>& tos);
   ~Channel() {}
   int transit(MessageTuple* inMsg, vector<MessageTuple*>& outMsgs,
               bool& high_prob, int startIdx = 0);
@@ -38,20 +38,26 @@ public:
 
 private:
   unique_ptr<SiteMessage> msg_in_transit_;
+  vector<bool> msg_exist_;
+
   int channel_id_;
   int src_site_id_;
-  int dest_site_id_;
+  vector<int> dest_site_ids_;
   string channel_name_;
   string src_name_;
-  string dest_name_;
+  vector<string> dest_names_;
+  int num_combinations_;
 };
 
 class ChannelSnapshot: public StateSnapshot {
   friend class Channel;
 public:
-  ChannelSnapshot(): ss_msg_(nullptr) {}
-  ChannelSnapshot(const SiteMessage* site_msg)
-      : ss_msg_(new SiteMessage(*site_msg)) {}
+  ChannelSnapshot(const vector<bool>& exist)
+      : ss_msg_(nullptr), ss_exist_(exist) {}
+  ChannelSnapshot(const SiteMessage* site_msg, const vector<bool>& exist)
+      : ss_msg_(new SiteMessage(*site_msg)) {
+    ss_exist_ = exist;
+  }
   ~ChannelSnapshot() {}
   int curStateId() const;
   string toString();
@@ -61,6 +67,7 @@ public:
 
 protected:
   unique_ptr<SiteMessage> ss_msg_;
+  vector<bool> ss_exist_;
 };
 
 #endif // FAILSAFEBDCAST_CHANNEL_H

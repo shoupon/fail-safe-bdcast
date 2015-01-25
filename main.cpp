@@ -30,7 +30,7 @@ using namespace std;
 #define CHECK_GUARANTEE_1
 #define CHECK_GUARANTEE_2
 
-#define NUM_SITES 3
+#define NUM_SITES 4
 
 ProbVerifier pvObj ;
 GlobalState* startPoint;
@@ -66,7 +66,8 @@ void setupCommitState(StoppingState& stop, int state, int counter,
     stop.addAllow(new SiteSnapshot(state, counter, phases),
                   s_ptr->macId() - 1);
   for (auto c_ptr : channels)
-    stop.addAllow(new ChannelSnapshot(), c_ptr->macId() - 1);
+    stop.addAllow(new ChannelSnapshot(vector<bool>(NUM_SITES - 1, true)),
+                  c_ptr->macId() - 1);
 }
 
 void mutateInitState(GlobalState* init, int state, int counter,
@@ -115,14 +116,17 @@ int main( int argc, char* argv[] ) {
       
       //vector<const StateMachine*> failure_group;
       //failure_group.push_back(sites.back());
+      vector<int> destinations;
       for (int j = 1; j <= kNumSites; ++j) {
-        if (i != j) {
-          channels.push_back(new Channel(message_lookup.get(), machine_lookup.get(), i, j));
-          pvObj.addMachine(channels.back());
-          sync->addMachine(channels.back());
-          //failure_group.push_back(channels.back());
-        }
+        if (i != j)
+          destinations.push_back(j);
       }
+      channels.push_back(new Channel(message_lookup.get(),
+                                     machine_lookup.get(),
+                                     i, destinations));
+      pvObj.addMachine(channels.back());
+      sync->addMachine(channels.back());
+      //failure_group.push_back(channels.back());
       //sync->addFailureGroup(failure_group);
     }
 
@@ -221,8 +225,11 @@ int main( int argc, char* argv[] ) {
     for (auto s_ptr : sites)
       error_0_2.addAllow(new SiteSnapshot(0, 2, no_commit),
                          s_ptr->macId() - 1);
-    for (auto c_ptr : channels)
-      error_0_2.addAllow(new ChannelSnapshot(), c_ptr->macId() - 1);
+    for (auto c_ptr : channels) {
+      error_0_2.addAllow(
+        new ChannelSnapshot(vector<bool>(NUM_SITES - 1, true)),
+        c_ptr->macId() - 1);
+    }
     pvObj.addError(&error_0_2);
 #elif (NUM_SITES == 4)
     vector<int> commit_0_7 {1, 1, 1, 1, 3, 3, 3, 3};
@@ -272,8 +279,11 @@ int main( int argc, char* argv[] ) {
     for (auto s_ptr : sites)
       error_0_2.addAllow(new SiteSnapshot(0, 2, no_commit),
                          s_ptr->macId() - 1);
-    for (auto c_ptr : channels)
-      error_0_2.addAllow(new ChannelSnapshot(), c_ptr->macId() - 1);
+    for (auto c_ptr : channels) {
+      error_0_2.addAllow(
+        new ChannelSnapshot(vector<bool>(NUM_SITES - 1, true)),
+        c_ptr->macId() - 1);
+    }
     pvObj.addError(&error_0_2);
 #elif (NUM_SITES == 5)
     vector<int> commit_0_9 {1, 1, 1, 1, 1, 3, 3, 3, 3, 3};
@@ -333,8 +343,11 @@ int main( int argc, char* argv[] ) {
     for (auto s_ptr : sites)
       error_0_2.addAllow(new SiteSnapshot(0, 2, no_commit),
                          s_ptr->macId() - 1);
-    for (auto c_ptr : channels)
-      error_0_2.addAllow(new ChannelSnapshot(), c_ptr->macId() - 1);
+    for (auto c_ptr : channels) {
+      error_0_2.addAllow(
+        new ChannelSnapshot(vector<bool>(NUM_SITES - 1, true)),
+        c_ptr->macId() - 1);
+    }
     pvObj.addError(&error_0_2);
 #endif
 

@@ -12,7 +12,6 @@
 #include <stdexcept>
 using namespace std;
 
-#include "../prob_verify/parser.h"
 #include "../prob_verify/pverify.h"
 #include "../prob_verify/define.h"
 #include "../prob_verify/sync.h"
@@ -30,7 +29,7 @@ using namespace std;
 #define CHECK_GUARANTEE_1
 #define CHECK_GUARANTEE_2
 
-#define NUM_SITES 4
+#define NUM_SITES 3
 
 ProbVerifier pvObj ;
 GlobalState* startPoint;
@@ -358,6 +357,10 @@ int main( int argc, char* argv[] ) {
 
     pvObj.addPrintStop(printStop) ;
         
+    ProbVerifierConfig config;
+    config.setLowProbBound(0.01);
+    config.setBoundMethod(DFS_BOUND);
+    pvObj.configure(config);
     // Start the procedure of probabilistic verification.
     // Specify the maximum probability depth to be explored
     //pvObj.start(2);

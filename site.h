@@ -75,7 +75,7 @@ public:
   ~SiteMessage() {}
   size_t numParams() { return 1; }
   int getParams(size_t arg) { return sequence_num_; }
-  string toString();
+  string toString() const;
   SiteMessage* clone() const { return new SiteMessage(*this); }
 
   int getSequenceNumber() { return sequence_num_; }
@@ -95,7 +95,7 @@ public:
       : ss_state_(state), ss_counter_(counter), ss_commit_phases_(phases) {}
   ~SiteSnapshot() {}
   int curStateId() const { return ss_state_; }
-  string toString();
+  string toString() const;
   int toInt();
   StateSnapshot* clone() const;
   bool match(StateSnapshot* other);

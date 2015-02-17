@@ -35,6 +35,7 @@ public:
   void restore(const StateSnapshot *snapshot);
   StateSnapshot* curState();
   void reset();
+  string getName() const { return channel_name_; }
 
 private:
   unique_ptr<SiteMessage> msg_in_transit_;
@@ -60,12 +61,14 @@ public:
   }
   ~ChannelSnapshot() {}
   int curStateId() const;
-  string toString();
+  string toString() const;
+  string toReadable() const;
   int toInt();
   StateSnapshot* clone() const;
   bool match(StateSnapshot* other);
 
 protected:
+  string stringify(const string& msg_str) const;
   unique_ptr<SiteMessage> ss_msg_;
   vector<bool> ss_exist_;
 };

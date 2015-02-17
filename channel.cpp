@@ -141,20 +141,20 @@ int ChannelSnapshot::curStateId() const {
     return 0;
 }
 
-string ChannelSnapshot::toString() {
-  stringstream ss;
-  if (ss_msg_) {
-    int k = 0;
-    for (int i = 0; i < ss_exist_.size(); ++i) {
-      if (k++)
-        ss << ",";
-      ss << ss_exist_[i];
-    }
-    return string("[") + ss_msg_->toString() + "]:" + ss.str();
-  } else {
-    return "[]";
-  }
+string ChannelSnapshot::toString() const {
+  if (ss_msg_)
+    return stringify(ss_msg_->toString());
+  else
+    return stringify("");
 }
+
+string ChannelSnapshot::toReadable() const {
+  if (ss_msg_)
+    return stringify(ss_msg_->toReadable());
+  else
+    return stringify("");
+}
+
 
 int ChannelSnapshot::toInt() {
   return ss_msg_->subjectId();
@@ -175,3 +175,19 @@ bool ChannelSnapshot::match(StateSnapshot* other) {
   else
     return *ss_msg_ == *(other_ss->ss_msg_);
 }
+
+string ChannelSnapshot::stringify(const string& msg_str) const {
+  stringstream ss;
+  if (ss_msg_) {
+    int k = 0;
+    for (int i = 0; i < ss_exist_.size(); ++i) {
+      if (k++)
+        ss << ",";
+      ss << ss_exist_[i];
+    }
+    return string("[") + msg_str + "]:" + ss.str();
+  } else {
+    return "[]";
+  }
+}
+

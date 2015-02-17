@@ -16,7 +16,8 @@ Site::Site(Lookup* msg, Lookup* mac, int id)
   stringstream ss;
   ss << SITE_NAME << "(" << id << ")";
   setId(machineToInt(ss.str()));
-  reset() ;
+  machine_name_ = ss.str();
+  reset();
 }
 
 int Site::transit(MessageTuple *inMsg, vector<MessageTuple*> &outMsgs,
@@ -211,13 +212,13 @@ SiteMessage::SiteMessage(int src, int dest, int srcMsg, int destMsg,
   ;
 }
 
-string SiteMessage::toString() {
+string SiteMessage::toString() const {
   stringstream ss;
   ss << MessageTuple::toString() << "(" << sequence_num_ << ")";
   return ss.str();
 }
 
-string SiteSnapshot::toString() {
+string SiteSnapshot::toString() const {
   stringstream ss;
   ss << "(" << ss_state_ << "," << ss_counter_ << "," << "[";
   for (int i = 0; i < ss_commit_phases_.size() - 1; ++i)

@@ -93,7 +93,7 @@ int main( int argc, char* argv[] ) {
     StateMachine::setLookup(message_lookup.get(), machine_lookup.get());
     StateMachine::setLookup(message_lookup.get(), machine_lookup.get());
     Sync::setRecurring(1);
-    Sync* sync = new Sync(1, message_lookup.get(), machine_lookup.get());
+    Sync* sync = new Sync(1);
     pvObj.addMachine(sync);
 
     // for each state machine:

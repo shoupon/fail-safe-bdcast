@@ -68,8 +68,7 @@ public:
   SiteMessage(int src, int dest, int srcMsg, int destMsg, int subject,
               int seq_num);
   SiteMessage(const SiteMessage& msg)
-      : MessageTuple(msg._src, msg._dest, msg._srcMsg, msg._destMsg,
-                     msg._subject),
+      : MessageTuple(msg._dest, msg._destMsg, msg._subject),
         sequence_num_(msg.sequence_num_) {}
 
   ~SiteMessage() {}

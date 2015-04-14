@@ -29,7 +29,7 @@ using namespace std;
 #define CHECK_GUARANTEE_1
 #define CHECK_GUARANTEE_2
 
-#define NUM_SITES 3
+#define NUM_SITES 4
 
 ProbVerifier pvObj ;
 GlobalState* startPoint;
@@ -359,7 +359,7 @@ int main( int argc, char* argv[] ) {
         
     ProbVerifierConfig config;
     config.setLowProbBound(0.01);
-    config.setBoundMethod(DFS_BOUND);
+    config.setBoundMethod(DFS_TWO_STEP);
     pvObj.configure(config);
     // Start the procedure of probabilistic verification.
     // Specify the maximum probability depth to be explored
